@@ -20,27 +20,5 @@ const UnAuthedRequest = axios.create({
   baseURL,
 });
 
-// Interceptors
-
-const inputMap = new Map<string, string>([
-  ["email", "ایمیل"],
-  ["username", "نام کابری"],
-]);
-
-// TODO: Implement global error handling
-
-function inValidInputHandler(
-  inputs: Map<string, string>,
-  resData: Object,
-): string {
-  inputMap.forEach((value: string, key: string) => {
-    if (key === Object.entries(resData)[0][0]) {
-      return `.${inputMap.get(key)} وارد شده تکراری است`;
-    }
-  });
-
-  return "خیلی عجیبه!";
-}
-
 export default AuthedRequest;
 export { UnAuthedRequest };
