@@ -6,7 +6,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage
+  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,11 +16,11 @@ import * as z from "zod";
 
 const formSchema = z.object({
   email: z.string().min(1, { message: "آدرس ایمیل اجباری است." }).email({
-    message: "آدرس ایمیل نامعتبر."
+    message: "آدرس ایمیل نامعتبر.",
   }),
   password: z
     .string()
-    .min(8, { message: "رمز عبور باید حداقل 8 کاراکتر باشد." })
+    .min(8, { message: "رمز عبور باید حداقل 8 کاراکتر باشد." }),
 });
 
 function page() {
@@ -28,8 +28,8 @@ function page() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
-      password: ""
-    }
+      password: "",
+    },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
