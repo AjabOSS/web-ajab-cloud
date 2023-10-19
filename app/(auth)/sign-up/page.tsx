@@ -30,22 +30,34 @@ import {
 const signupFormSchema = z
   .object({
     name: z.string().min(1, { message: "نام اجباری است." }).max(50),
-    username: z.string().min(5, {
-      message: "نام کاربری باید حداقل 5 کاراکتر باشد.",
-    }),
+    username: z
+      .string()
+      .trim()
+      .min(5, {
+        message: "نام کاربری باید حداقل 5 کاراکتر باشد.",
+      })
+      .regex(/^[a-zA-Z\d\s_-]*[a-zA-Z][a-zA-Z\d\s_-]*$/, {
+        message: "نام کاربری باید انگلیسی باشد.",
+      }),
     email: z.string().min(1, { message: "آدرس ایمیل اجباری است." }).email({
       message: "آدرس ایمیل نامعتبر",
     }),
     password: z
       .string()
-      .min(8, { message: "رمز عبور باید حداقل 8 کاراکتر باشد." }),
-    password2: z
-      .string()
-      .min(8, { message: "رمز عبور باید حداقل 8 کاراکتر باشد." }),
+      .min(8, {
+        message: "رمز عبور باید حداقل 8 کاراکتر باشد.",
+      })
+      .regex(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/, {
+        message:
+          "رمز عبور باید حداقل شامل یک حرف بزرگ و کوچک و کاراکتر خاص باشد.",
+      }),
+    confirm_password: z.string().min(8, {
+      message: "رمز عبور باید حداقل 8 کاراکتر باشد.",
+    }),
   })
-  .refine((data) => data.password === data.password2, {
+  .refine((data) => data.password === data.confirm_password, {
     message: "رمز های عبور مشابه نیستند.",
-    path: ["password2"],
+    path: ["confirm_password"],
   });
 
 const verificationFormSchema = z.object({
@@ -54,7 +66,7 @@ const verificationFormSchema = z.object({
 
 function page() {
   const [pendingVerification, setPendingVerification] = useState(false);
-  const [showError, setShowError] = useState(true);
+  const [showError, setShowError] = useState(false);
   const [message, setMessage] = useState("ایمیل وارد شده تکراری است.");
 
   const signupForm = useForm<z.infer<typeof signupFormSchema>>({
@@ -64,7 +76,7 @@ function page() {
       email: "",
       password: "",
       name: "",
-      password2: "",
+      confirm_password: "",
     },
   });
   const verificationForm = useForm<z.infer<typeof verificationFormSchema>>({
@@ -186,7 +198,7 @@ function page() {
                   />
                   <FormField
                     control={signupForm.control}
-                    name="password2"
+                    name="confirm_password"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>تکرار رمز عبور</FormLabel>
