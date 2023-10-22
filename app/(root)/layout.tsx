@@ -1,6 +1,7 @@
 import { useFontImpoter } from "@/lib/utils";
 import "../globals.css";
 import type { Metadata } from "next";
+import Provider from "@/components/auth/Provider";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -16,7 +17,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fa" dir="rtl">
-      <body className={`${font.variable}`}>{children}</body>
+      <body className={`${font.variable}`}>
+        <Provider>{children}</Provider>
+      </body>
     </html>
   );
 }
