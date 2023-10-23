@@ -67,6 +67,41 @@ async function userSignIn(email: string, password: string): Promise<SignInRes> {
   }
 }
 
-async function verifyEmail() {}
+async function verifyEmail(token: string, code: string) {
+  try {
+    const { data } = await UnAuthedRequest.post(
+      "auth/verify-email/",
+      {
+        code: code,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `token ${token}`,
+        },
+      },
+    );
+    console.log(data);
+  } catch (e) {
+    const err = e as AxiosError;
+    console.log(err);
+  }
+}
 
-export { signUp, userSignIn, verifyEmail };
+async function sendEmailVerification(token: string) {
+  try {
+    const { data } = await UnAuthedRequest.post(
+      "auth/send-verification-email/",
+      {},
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `token ${token}`,
+        },
+      },
+    );
+    console.log(data);
+  } catch (e) {}
+}
+
+export { signUp, userSignIn, verifyEmail, sendEmailVerification };

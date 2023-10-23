@@ -11,6 +11,11 @@ import { Button } from "@/components/ui/button";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
+import {
+  sendEmailVerification,
+  verifyEmail,
+} from "@/lib/services/user.service";
 
 const verificationFormSchema = z.object({
   code: z.string().min(1, { message: "کد تایید را وارد کنید." }),
@@ -25,8 +30,17 @@ function EmailValidationForm({ token }: { token: string }) {
   async function onVerificationSubmit(
     values: z.infer<typeof verificationFormSchema>,
   ) {
-    console.log(values);
+    await verifyEmail(token, values.code);
   }
+
+  useEffect(() => {
+    async function callSendEmailVerification() {
+      console.log(token + " HI");
+      await sendEmailVerification(token);
+    }
+
+    callSendEmailVerification();
+  }, [token]);
 
   return (
     <div className="flex min-h-screen flex-1 flex-col items-center justify-center py-12 sm:px-6 lg:px-8">
