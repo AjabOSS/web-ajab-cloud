@@ -24,7 +24,7 @@ const authOptions: NextAuthOptions = {
         if (res.isOk) {
           return { ...res.user } as any;
         } else if (!res.isOk && res.message) {
-          return Promise.reject({ message: res.message });
+          return Promise.reject({ message: [res.message, res.user?.token] });
         }
 
         return null;

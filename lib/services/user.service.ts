@@ -8,10 +8,10 @@ let message = "مشکلی نامشخص رخ داده است.";
 export type SignUpMessage =
   | "کد تایید برای صحت سنجی به ایمیل شما ارسال شد."
   | string;
-async function signUp(credentials: any): Promise<SignUpMessage> {
+async function signUp(credentials: any): Promise<[SignUpMessage, string]> {
   try {
-    await UnAuthedRequest.post("auth/register/", credentials);
-    return "کد تایید برای صحت سنجی به ایمیل شما ارسال شد.";
+    const { data } = await UnAuthedRequest.post("auth/register/", credentials);
+    return ["کد تایید برای صحت سنجی به ایمیل شما ارسال شد.", data.token];
   } catch (error) {
     const err = error as AxiosError;
     const data = err.response?.data as object;
@@ -22,7 +22,7 @@ async function signUp(credentials: any): Promise<SignUpMessage> {
       }
     });
 
-    return message;
+    return [message, ""];
   }
 }
 
@@ -52,7 +52,7 @@ async function userSignIn(email: string, password: string): Promise<SignInRes> {
       return {
         isOk: false,
         message: "صحت سنجی ایمیل",
-        user: null,
+        user: data,
       };
     }
     return { isOk: true, user: data };

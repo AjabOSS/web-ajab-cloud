@@ -59,15 +59,12 @@ const signupFormSchema = z
     path: ["confirm_password"],
   });
 
-const verificationFormSchema = z.object({
-  code: z.string().min(1, { message: "کد تایید را وارد کنید." }),
-});
-
 function page() {
   const [pendingVerification, setPendingVerification] = useState(false);
   const [showError, setShowError] = useState(false);
   const [message, setMessage] = useState<SignUpMessage>("");
   const [title, setTitle] = useState("");
+  const [token, setToken] = useState("");
 
   const signupForm = useForm<z.infer<typeof signupFormSchema>>({
     resolver: zodResolver(signupFormSchema),
@@ -80,8 +77,10 @@ function page() {
     },
   });
   async function onSignupSubmit(values: z.infer<typeof signupFormSchema>) {
-    const msg = await signUp(values);
+    const [msg, tkn] = await signUp(values);
     setMessage(msg);
+    setToken(tkn);
+    console.log(tkn);
     setShowError(true);
     msg === "کد تایید برای صحت سنجی به ایمیل شما ارسال شد."
       ? setTitle("صحت سنجی ایمیل")
@@ -225,7 +224,7 @@ function page() {
           </div>
         </div>
       )}
-      {pendingVerification && <EmailValidationForm token={``} />}
+      {pendingVerification && <EmailValidationForm token={token} />}
       {showError && (
         <AlertDialog
           onOpenChange={() => {
