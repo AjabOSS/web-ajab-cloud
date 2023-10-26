@@ -25,6 +25,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import EmailValidationForm from "@/components/forms/EmailValidationForm";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 const signupFormSchema = z
   .object({
@@ -86,6 +88,14 @@ function page() {
       ? setTitle("صحت سنجی ایمیل")
       : setTitle("اطلاعات نادرست");
   }
+
+  const router = useRouter();
+
+  const { status } = useSession();
+  if (status === "authenticated") {
+    router.push("/");
+  }
+
   return (
     <>
       {!pendingVerification && (

@@ -13,7 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { signIn, signOut } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { SignInErrorMessage } from "@/lib/services/user.service";
 import { useState } from "react";
 import {
@@ -84,6 +84,10 @@ function page() {
     } else {
       router.push("/");
     }
+  }
+  const { status } = useSession();
+  if (status === "authenticated") {
+    router.push("/");
   }
 
   return (
