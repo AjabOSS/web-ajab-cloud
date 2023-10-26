@@ -17,7 +17,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fa" dir="rtl">
-      <body className={`${font.variable}`}>
+      <body className={`${font.variable}  bg-gray-200`}>
         <Provider>{children}</Provider>
       </body>
     </html>
