@@ -80,8 +80,8 @@ function page() {
     const [msg, tkn] = await signUp(values);
     setMessage(msg);
     setToken(tkn);
-    console.log(tkn);
     setShowError(true);
+
     msg === "کد تایید برای صحت سنجی به ایمیل شما ارسال شد."
       ? setTitle("صحت سنجی ایمیل")
       : setTitle("اطلاعات نادرست");
@@ -224,7 +224,13 @@ function page() {
           </div>
         </div>
       )}
-      {pendingVerification && <EmailValidationForm token={token} />}
+      {pendingVerification && (
+        <EmailValidationForm
+          token={token}
+          email={signupForm.getValues("email")}
+          password={signupForm.getValues("password")}
+        />
+      )}
       {showError && (
         <AlertDialog
           onOpenChange={() => {

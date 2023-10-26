@@ -67,7 +67,7 @@ async function userSignIn(email: string, password: string): Promise<SignInRes> {
   }
 }
 
-async function verifyEmail(token: string, code: string) {
+async function verifyEmail(token: string, code: string): Promise<boolean> {
   try {
     const { data } = await UnAuthedRequest.post(
       "auth/verify-email/",
@@ -81,16 +81,16 @@ async function verifyEmail(token: string, code: string) {
         },
       },
     );
-    console.log(data);
+    return true;
   } catch (e) {
-    const err = e as AxiosError;
-    console.log(err);
+    // const err = e as AxiosError;
+    return false;
   }
 }
 
 async function sendEmailVerification(token: string) {
   try {
-    const { data } = await UnAuthedRequest.post(
+    await UnAuthedRequest.post(
       "auth/send-verification-email/",
       {},
       {
@@ -100,7 +100,6 @@ async function sendEmailVerification(token: string) {
         },
       },
     );
-    console.log(data);
   } catch (e) {}
 }
 

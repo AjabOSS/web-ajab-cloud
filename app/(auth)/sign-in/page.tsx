@@ -13,7 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { signIn } from "next-auth/react";
+import { signIn, signOut } from "next-auth/react";
 import { SignInErrorMessage } from "@/lib/services/user.service";
 import { useState } from "react";
 import {
@@ -26,7 +26,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import EmailValidationForm from "@/components/forms/EmailValidationForm";
-
+import { useRouter } from "next/navigation";
 const formSchema = z.object({
   email: z.string().min(1, { message: "آدرس ایمیل اجباری است." }).email({
     message: "آدرس ایمیل نامعتبر.",
@@ -43,6 +43,8 @@ function page() {
   const [title, setTitle] = useState<SignInErrorMessage>("صحت سنجی ایمیل");
   const [btnTitle, setBtnTitle] = useState("");
   const [token, setToken] = useState("");
+
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -65,17 +67,22 @@ function page() {
       string,
     ];
 
-    if (resultArray[0] === "صحت سنجی ایمیل") {
+    if (resultArray && resultArray?.[0] === "صحت سنجی ایمیل") {
       setTitle(resultArray[0]);
       setMessage("کد تایید به ایمیل شما شده است.");
       setBtnTitle("وارد کردن کد");
       setToken(resultArray[1]);
       setShowError(true);
-    } else if (resultArray[0] === "اطلاعات وارد شده صحیح نمی باشد.") {
+    } else if (
+      resultArray &&
+      resultArray[0] === "اطلاعات وارد شده صحیح نمی باشد."
+    ) {
       setMessage("کاربری با چنین ایمیل یا رمز عبوری وجود ندارد.");
       setTitle(resultArray[0]);
       setBtnTitle("متوجه شدم");
       setShowError(true);
+    } else {
+      router.push("/");
     }
   }
 
@@ -179,7 +186,13 @@ function page() {
         </div>
       )}
 
-      {pendingValidation && <EmailValidationForm token={token} />}
+      {pendingValidation && (
+        <EmailValidationForm
+          token={token}
+          email={form.getValues("email")}
+          password={form.getValues("password")}
+        />
+      )}
 
       {showError && (
         <AlertDialog
