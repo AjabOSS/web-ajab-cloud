@@ -27,13 +27,10 @@ import {
 } from "@/components/ui/alert-dialog";
 import EmailValidationForm from "@/components/forms/EmailValidationForm";
 import { useRouter } from "next/navigation";
+import { emailSchema, passwordSchema } from "@/lib/schemas";
 const formSchema = z.object({
-  email: z.string().min(1, { message: "آدرس ایمیل اجباری است." }).email({
-    message: "آدرس ایمیل نامعتبر.",
-  }),
-  password: z
-    .string()
-    .min(8, { message: "رمز عبور باید حداقل 8 کاراکتر باشد." }),
+  email: emailSchema,
+  password: passwordSchema,
 });
 
 function page() {

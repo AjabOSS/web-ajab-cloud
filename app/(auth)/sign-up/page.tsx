@@ -27,31 +27,19 @@ import {
 import EmailValidationForm from "@/components/forms/EmailValidationForm";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import {
+  emailSchema,
+  nameSchema,
+  passwordSchema,
+  usernameSchema,
+} from "@/lib/schemas";
 
 const signupFormSchema = z
   .object({
-    name: z.string().min(1, { message: "نام اجباری است." }).max(50),
-    username: z
-      .string()
-      .trim()
-      .min(5, {
-        message: "نام کاربری باید حداقل 5 کاراکتر باشد.",
-      })
-      .regex(/^[a-zA-Z\d\s_-]*[a-zA-Z][a-zA-Z\d\s_-]*$/, {
-        message: "نام کاربری باید انگلیسی باشد.",
-      }),
-    email: z.string().min(1, { message: "آدرس ایمیل اجباری است." }).email({
-      message: "آدرس ایمیل نامعتبر",
-    }),
-    password: z
-      .string()
-      .min(8, {
-        message: "رمز عبور باید حداقل 8 کاراکتر باشد.",
-      })
-      .regex(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/, {
-        message:
-          "رمز عبور باید حداقل شامل یک حرف بزرگ و کوچک و کاراکتر خاص باشد.",
-      }),
+    name: nameSchema,
+    username: usernameSchema,
+    email: emailSchema,
+    password: passwordSchema,
     confirm_password: z.string().min(8, {
       message: "رمز عبور باید حداقل 8 کاراکتر باشد.",
     }),
