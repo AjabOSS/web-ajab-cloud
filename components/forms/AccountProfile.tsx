@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ChangeEvent, useState } from "react";
 import * as z from "zod";
 import { nameSchema, usernameSchema } from "@/lib/schemas";
 import { useForm } from "react-hook-form";
@@ -6,251 +6,311 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { PhotoIcon, UserCircleIcon } from "@heroicons/react/24/solid";
-const UserFormSchema = z.object({
-  profile_image: z.string().url().min(1),
+import { Button } from "@/components/ui/button";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Textarea } from "@/components/ui/textarea";
+import Image from "next/image";
+import env from "@/env";
+interface IProps {
+  user: {
+    name: string | undefined;
+    username: string | undefined;
+    profile_image: string | undefined;
+    bio: string | undefined;
+    is_male: boolean | undefined;
+  };
+}
+
+interface IFile {
+  file: File;
+  URL?: string;
+}
+
+const formSchema = z.object({
   name: nameSchema,
   username: usernameSchema,
-  bio: z.string().min(1).max(1000),
+  profile_image: z.string().url().min(1),
+  profile_cover: z.string().url().min(1),
+  bio: z.string().max(1000),
+  is_male: z.enum(["male", "female"]),
 });
-function AccountProfile() {
-  const form = useForm<z.infer<typeof UserFormSchema>>({
-    resolver: zodResolver(UserFormSchema),
+
+function AccountProfile({
+  user: { profile_image, is_male, bio, username, name },
+}: IProps) {
+  const [profile, setProfile] = useState<IFile | null>(null);
+  const [cover, setCover] = useState<IFile | null>(null);
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
-      bio: "",
-      name: "",
-      profile_image: "",
-      username: "",
+      username: username ? username : "",
+      name: name ? name : "",
+      profile_image: profile_image ? profile_image : "",
+      bio: bio ? bio : "",
+      is_male: is_male ? "male" : "female",
     },
   });
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log(values);
+  }
 
-  async function onSubmit(values: z.infer<typeof UserFormSchema>) {}
+  function handleImage(
+    e: ChangeEvent<HTMLInputElement>,
+    fieldChange: (value: string) => void,
+    type: "Profile" | "Cover",
+  ) {
+    e.preventDefault();
+    const fileReader = new FileReader();
+
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+
+      if (!file.type.includes("image")) return;
+
+      fileReader.onload = async (event) => {
+        const imageDataUrl = event.target?.result?.toString() || "";
+        if (type === "Profile") {
+          setProfile({ file: file, URL: imageDataUrl });
+        } else {
+          setCover({ file: file, URL: imageDataUrl });
+        }
+        console.log(imageDataUrl);
+        fieldChange(imageDataUrl);
+      };
+
+      fileReader.readAsDataURL(file);
+    }
+  }
+
   return (
-    // <Form {...form}>
-    //   <form
-    //     className="flex flex-col justify-start gap-10"
-    //     onSubmit={form.handleSubmit(onSubmit)}
-    //   >
-    //     <FormField
-    //       control={form.control}
-    //       name="name"
-    //       render={({ field }) => (
-    //         <FormItem className="flex w-full flex-col gap-3">
-    //           <FormLabel className="font-medium">اسم</FormLabel>
-    //           <FormControl>
-    //             <Input
-    //               type="text"
-    //               className="border focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
-    //               {...field}
-    //             />
-    //           </FormControl>
-    //         </FormItem>
-    //       )}
-    //     />
-    //   </form>
-    // </Form>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        <div className="space-y-12">
+          {/* Profile Section */}
+          <div className="border-b border-gray-900/10 pb-12">
+            {/* Title */}
+            <h2 className="text-base font-semibold leading-7 text-gray-900">
+              پروفایل
+            </h2>
+            {/* Subtitle */}
+            <p className="mt-1 text-sm leading-6 text-gray-600">
+              این اطلاعات به صورت عمومی نمایش داده می شود، بنابراین مراقب آنچه
+              به اشتراک می گذارید باشید.
+            </p>
+            {/* Content */}
+            <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem className="sm:col-span-4">
+                    <FormLabel>نام کاربری</FormLabel>
+                    <FormControl className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
+                      <Input
+                        className="block w-full rounded-md border-0 bg-transparent py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-    <form>
-      <div className="space-y-12">
-        <div className="border-b border-gray-900/10 pb-12">
-          <h2 className="text-base font-semibold leading-7 text-gray-900">
-            پروفایل
-          </h2>
-          <p className="mt-1 text-sm leading-6 text-gray-600">
-            این اطلاعات به صورت عمومی نمایش داده می شود، بنابراین مراقب آنچه به
-            اشتراک می گذارید باشید.
-          </p>
+              <FormField
+                control={form.control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem className="sm:col-span-4">
+                    <FormLabel>نام</FormLabel>
+                    <FormControl className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
+                      <Input
+                        className="block w-full rounded-md border-0 bg-transparent py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-            {/* Name */}
-            <div className="sm:col-span-4">
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium leading-6 text-gray-900"
-              >
-                نام
-              </label>
-              <div className="mt-2">
-                <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
-                  <input
-                    type="text"
-                    name="name"
-                    id="name"
-                    autoComplete="username"
-                    className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
-                    placeholder="نام و نام خانوادگی"
-                  />
-                </div>
-              </div>
-            </div>
-            {/* Username */}
-            <div className="sm:col-span-4">
-              <label
-                htmlFor="username"
-                className="block text-sm font-medium leading-6 text-gray-900"
-              >
-                نام کاربری
-              </label>
-              <div className="mt-2">
-                <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
-                  <input
-                    type="text"
-                    name="username"
-                    id="username"
-                    autoComplete="username"
-                    className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
-                    placeholder="AjabCloud"
-                  />
-                </div>
-              </div>
-            </div>
-            {/* Gender */}
-            <div className="sm:col-span-4">
-              <label
-                htmlFor="username"
-                className="block text-sm font-medium leading-6 text-gray-900"
-              >
-                جنسیت
-              </label>
-              <div className="mt-2">
-                <fieldset className="mt-4">
-                  <legend className="sr-only">Notification method</legend>
-                  <div className="space-y-4 sm:flex sm:items-center sm:space-x-10 sm:space-y-0">
-                    <div className="flex items-center">
-                      <input
-                        id={"male-check"}
-                        name="notification-method"
-                        type="radio"
-                        defaultChecked={true}
-                        className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                      />
-                      <label
-                        htmlFor={"male-check"}
-                        className="ml-3 mr-1.5 block text-sm font-medium leading-6 text-gray-900"
+              <FormField
+                control={form.control}
+                name="is_male"
+                render={({ field }) => (
+                  <FormItem className="sm:col-span-4">
+                    <FormLabel>جنسیت</FormLabel>
+                    <FormControl>
+                      <RadioGroup
+                        onValueChange={field.onChange}
+                        defaultValue="male"
+                        className="flex items-center justify-end"
                       >
-                        مرد
-                      </label>
-                    </div>
-                    <div className="flex items-center">
-                      <input
-                        id={"female-check"}
-                        name="notification-method"
-                        type="radio"
-                        defaultChecked={true}
-                        className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormLabel className="font-normal">مرد</FormLabel>
+                          <FormControl>
+                            <RadioGroupItem value="male" />
+                          </FormControl>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormLabel className="font-normal">زن</FormLabel>
+                          <FormControl>
+                            <RadioGroupItem value="female" />
+                          </FormControl>
+                        </FormItem>
+                      </RadioGroup>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="bio"
+                render={({ field }) => (
+                  <FormItem className="sm:col-span-full">
+                    <FormLabel>درباره</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        {...field}
+                        rows={3}
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                       />
+                    </FormControl>
+                    <FormDescription>
+                      چند جمله در مورد خودتان بنویسید.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="profile_image"
+                render={({ field }) => (
+                  <FormItem className="sm:col-span-full">
+                    <FormLabel>عکس </FormLabel>
+                    <FormItem className="mt-2 flex items-center gap-x-3">
+                      {field.value ? (
+                        <Image
+                          src={
+                            field.value === profile_image
+                              ? `${
+                                  env.NEXT_PUBLIC_FILE_BASE_URL + profile_image
+                                }`
+                              : field.value
+                          }
+                          alt="profile"
+                          width={48}
+                          height={48}
+                          className="rounded-full object-contain"
+                          priority
+                        />
+                      ) : (
+                        <UserCircleIcon
+                          className="h-12 w-12 text-gray-300"
+                          aria-hidden="true"
+                        />
+                      )}
                       <label
-                        htmlFor={"female-check"}
-                        className="ml-3 mr-1.5 block text-sm font-medium leading-6 text-gray-900"
+                        htmlFor="profile_image"
+                        className="relative cursor-pointer rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 
+                        shadow-sm ring-1 ring-inset ring-gray-300 focus-within:outline-none focus-within:ring-2 
+                        focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:bg-gray-50 hover:text-indigo-500"
                       >
-                        زن
+                        <span>آپلود عکس</span>
+                        <input
+                          id="profile_image"
+                          type="file"
+                          className="sr-only"
+                          accept="image/*"
+                          onChange={(e) =>
+                            handleImage(e, field.onChange, "Cover")
+                          }
+                        />
                       </label>
-                    </div>
-                  </div>
-                </fieldset>
-              </div>
-            </div>
-            {/* Bio */}
-            <div className="col-span-full">
-              <label
-                htmlFor="about"
-                className="block text-sm font-medium leading-6 text-gray-900"
-              >
-                درباره
-              </label>
-              <div className="mt-2">
-                <textarea
-                  id="about"
-                  name="about"
-                  rows={3}
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                  defaultValue={""}
-                />
-              </div>
-              <p className="mt-3 text-sm leading-6 text-gray-600">
-                چند جمله در مورد خودتان بنویسید.
-              </p>
-            </div>
-            {/* Photo */}
-            <div className="col-span-full">
-              <label
-                htmlFor="photo"
-                className="block text-sm font-medium leading-6 text-gray-900"
-              >
-                عکس
-              </label>
-              <div className="mt-2 flex items-center gap-x-3">
-                <UserCircleIcon
-                  className="h-12 w-12 text-gray-300"
-                  aria-hidden="true"
-                />
-                <button
-                  type="button"
-                  className="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-                >
-                  عکس جدید
-                </button>
-              </div>
-            </div>
-            {/* Cover Photo */}
-            <div className="col-span-full">
-              <label
-                htmlFor="cover-photo"
-                className="block text-sm font-medium leading-6 text-gray-900"
-              >
-                عکس کاور
-              </label>
-              <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
-                <div className="text-center">
-                  <PhotoIcon
-                    className="mx-auto h-12 w-12 text-gray-300"
-                    aria-hidden="true"
-                  />
-                  <div className="mt-4 flex text-sm leading-6 text-gray-600">
-                    <label
-                      htmlFor="file-upload"
-                      className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
-                    >
-                      <span>آپلود عکس</span>
-                      <input
-                        id="file-upload"
-                        name="file-upload"
-                        type="file"
-                        className="sr-only"
-                      />
-                    </label>
-                    <p className="pr-1">یا بکشید و اینجا رها کنید</p>
-                  </div>
-                  <p className="text-xs leading-5 text-gray-600">
-                    PNG, JPG, GIF تا 10 مگابایت.
-                  </p>
-                </div>
-              </div>
+                    </FormItem>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="profile_cover"
+                render={({ field }) => (
+                  <FormItem className="sm:col-span-full">
+                    <FormLabel>عکس کاور</FormLabel>
+                    <FormItem className="relative mt-2 rounded-lg">
+                      <FormControl>
+                        <div className="relative h-full w-full">
+                          <Image
+                            src={`${
+                              env.NEXT_PUBLIC_FILE_BASE_URL +
+                              "/media/images/users/planet-scenery-sci-fi-digital-art-4k-wallpaper-uhdpaper.com-7101k.jpg"
+                            }`}
+                            alt=""
+                            width={0}
+                            height={0}
+                            sizes="100vw"
+                            className="h-auto w-full rounded-md"
+                          />
+                        </div>
+                      </FormControl>
+                    </FormItem>
+                    <FormItem className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
+                      <div className="text-center">
+                        <PhotoIcon
+                          className="mx-auto h-12 w-12 text-gray-300"
+                          aria-hidden="true"
+                        />
+                        <FormControl>
+                          <div className="mt-4 flex text-sm leading-6 text-gray-600">
+                            <label
+                              htmlFor="cover_image"
+                              className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
+                            >
+                              <span>آپلود عکس</span>
+                              <input
+                                id="cover_image"
+                                type="file"
+                                className="sr-only"
+                                accept="image/*"
+                                onChange={(e) =>
+                                  handleImage(e, field.onChange, "Profile")
+                                }
+                              />
+                            </label>
+                            <p className="pr-1">یا بکشید و اینجا رها کنید</p>
+                          </div>
+                        </FormControl>
+
+                        <p className="text-xs leading-5 text-gray-600">
+                          PNG, JPG, GIF تا 10 مگابایت.
+                        </p>
+                      </div>
+                    </FormItem>
+                  </FormItem>
+                )}
+              />
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="mt-6 flex items-center justify-end gap-x-6">
-        <button
-          type="button"
-          className="text-sm font-semibold leading-6 text-gray-900"
-        >
-          لغو
-        </button>
-        <button
-          type="submit"
-          className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-        >
-          دخیره
-        </button>
-      </div>
-    </form>
+        <div className="mt-6 flex items-center justify-end gap-x-6">
+          <Button variant="ghost">لغو</Button>
+          <Button type="submit">ذخیره</Button>
+        </div>
+      </form>
+    </Form>
   );
 }
 
