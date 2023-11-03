@@ -38,7 +38,6 @@ const formSchema = z.object({
   name: nameSchema,
   username: usernameSchema,
   profile_image: z.string().url().min(1),
-  profile_cover: z.string().url().min(1),
   bio: z.string().max(1000),
   is_male: z.enum(["male", "female"]),
 });
@@ -47,7 +46,6 @@ function AccountProfile({
   user: { profile_image, is_male, bio, username, name },
 }: IProps) {
   const [profile, setProfile] = useState<IFile | null>(null);
-  const [cover, setCover] = useState<IFile | null>(null);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -65,7 +63,6 @@ function AccountProfile({
   function handleImage(
     e: ChangeEvent<HTMLInputElement>,
     fieldChange: (value: string) => void,
-    type: "Profile" | "Cover",
   ) {
     e.preventDefault();
     const fileReader = new FileReader();
@@ -77,11 +74,8 @@ function AccountProfile({
 
       fileReader.onload = async (event) => {
         const imageDataUrl = event.target?.result?.toString() || "";
-        if (type === "Profile") {
-          setProfile({ file: file, URL: imageDataUrl });
-        } else {
-          setCover({ file: file, URL: imageDataUrl });
-        }
+
+        setProfile({ file: file, URL: imageDataUrl });
         console.log(imageDataUrl);
         fieldChange(imageDataUrl);
       };
@@ -233,70 +227,9 @@ function AccountProfile({
                           type="file"
                           className="sr-only"
                           accept="image/*"
-                          onChange={(e) =>
-                            handleImage(e, field.onChange, "Cover")
-                          }
+                          onChange={(e) => handleImage(e, field.onChange)}
                         />
                       </label>
-                    </FormItem>
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="profile_cover"
-                render={({ field }) => (
-                  <FormItem className="sm:col-span-full">
-                    <FormLabel>عکس کاور</FormLabel>
-                    <FormItem className="relative mt-2 rounded-lg">
-                      <FormControl>
-                        <div className="relative h-full w-full">
-                          <Image
-                            src={`${
-                              env.NEXT_PUBLIC_FILE_BASE_URL +
-                              "/media/images/users/planet-scenery-sci-fi-digital-art-4k-wallpaper-uhdpaper.com-7101k.jpg"
-                            }`}
-                            alt=""
-                            width={0}
-                            height={0}
-                            sizes="100vw"
-                            className="h-auto w-full rounded-md"
-                          />
-                        </div>
-                      </FormControl>
-                    </FormItem>
-                    <FormItem className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
-                      <div className="text-center">
-                        <PhotoIcon
-                          className="mx-auto h-12 w-12 text-gray-300"
-                          aria-hidden="true"
-                        />
-                        <FormControl>
-                          <div className="mt-4 flex text-sm leading-6 text-gray-600">
-                            <label
-                              htmlFor="cover_image"
-                              className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
-                            >
-                              <span>آپلود عکس</span>
-                              <input
-                                id="cover_image"
-                                type="file"
-                                className="sr-only"
-                                accept="image/*"
-                                onChange={(e) =>
-                                  handleImage(e, field.onChange, "Profile")
-                                }
-                              />
-                            </label>
-                            <p className="pr-1">یا بکشید و اینجا رها کنید</p>
-                          </div>
-                        </FormControl>
-
-                        <p className="text-xs leading-5 text-gray-600">
-                          PNG, JPG, GIF تا 10 مگابایت.
-                        </p>
-                      </div>
                     </FormItem>
                   </FormItem>
                 )}
