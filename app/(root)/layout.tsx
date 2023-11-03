@@ -1,6 +1,7 @@
 import QueryProvider from "@/components/Query/QueryProvider";
 import "../globals.css";
 import type { Metadata } from "next";
+import Topbar from "@/components/shared/Topbar";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -14,7 +15,7 @@ export default function RootLayout({
 }) {
   return (
     <QueryProvider>
-      {/*<Topbar />*/}
+      <Topbar />
       <main className="flex">
         {/*<RightSidebar />*/}
         <section className="flex min-h-screen flex-1 flex-col items-center px-6 pb-10 pt-28 max-md:pb-32 sm:px-10">

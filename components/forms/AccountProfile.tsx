@@ -107,9 +107,9 @@ function AccountProfile({
                 render={({ field }) => (
                   <FormItem className="sm:col-span-4">
                     <FormLabel>نام کاربری</FormLabel>
-                    <FormControl className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
+                    <FormControl className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-primary sm:max-w-md">
                       <Input
-                        className="block w-full rounded-md border-0 bg-transparent py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 bg-transparent py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
                         {...field}
                       />
                     </FormControl>
@@ -124,9 +124,9 @@ function AccountProfile({
                 render={({ field }) => (
                   <FormItem className="sm:col-span-4">
                     <FormLabel>نام</FormLabel>
-                    <FormControl className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
+                    <FormControl className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-primary sm:max-w-md">
                       <Input
-                        className="block w-full rounded-md border-0 bg-transparent py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 bg-transparent py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
                         {...field}
                       />
                     </FormControl>
@@ -176,7 +176,7 @@ function AccountProfile({
                       <Textarea
                         {...field}
                         rows={3}
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
                       />
                     </FormControl>
                     <FormDescription>
@@ -219,7 +219,7 @@ function AccountProfile({
                         htmlFor="profile_image"
                         className="relative cursor-pointer rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 
                         shadow-sm ring-1 ring-inset ring-gray-300 focus-within:outline-none focus-within:ring-2 
-                        focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:bg-gray-50 hover:text-indigo-500"
+                        focus-within:ring-primary focus-within:ring-offset-2 hover:bg-gray-50 hover:text-primary"
                       >
                         <span>آپلود عکس</span>
                         <input
