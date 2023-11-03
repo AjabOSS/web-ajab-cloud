@@ -103,4 +103,30 @@ async function sendEmailVerification(token: string) {
   } catch (e) {}
 }
 
-export { signUp, userSignIn, verifyEmail, sendEmailVerification };
+async function getUserByUsername(username: string): Promise<IUser> {
+  try {
+    const { data } = await UnAuthedRequest.get<IUser>(
+      `auth/get-user-by-username/${username}/`,
+    );
+    console.log(data);
+    return data;
+  } catch (error) {
+    return {
+      bio: "",
+      college: "",
+      email: "",
+      username: "",
+      is_active: false,
+      is_email_verified: false,
+      is_male: false,
+    };
+  }
+}
+
+export {
+  signUp,
+  userSignIn,
+  verifyEmail,
+  sendEmailVerification,
+  getUserByUsername,
+};

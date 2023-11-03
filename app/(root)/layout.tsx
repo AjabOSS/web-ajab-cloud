@@ -1,3 +1,4 @@
+import QueryProvider from "@/components/Query/QueryProvider";
 import "../globals.css";
 import type { Metadata } from "next";
 
@@ -12,7 +13,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <>
+    <QueryProvider>
       {/*<Topbar />*/}
       <main className="flex">
         {/*<RightSidebar />*/}
@@ -22,6 +23,6 @@ export default function RootLayout({
         {/*<LeftSidebar />*/}
       </main>
       {/*<Bottombar />*/}
-    </>
+    </QueryProvider>
   );
 }
