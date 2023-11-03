@@ -34,7 +34,7 @@ function ProfileHeader({
             />
           </div>
           <div className="flex-1">
-            <h2 className="text-light-1 text-right text-2xl font-bold">
+            <h2 className="text-right text-sm font-bold sm:text-2xl">
               {name}
             </h2>
             <p dir="ltr" className="text-gray-1 text-center font-medium">
