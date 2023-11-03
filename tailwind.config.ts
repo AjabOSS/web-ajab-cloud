@@ -53,6 +53,15 @@ const config: Config = {
           foreground: "hsl(var(--card-foreground))",
         },
       },
+      screens: {
+        "laptop-lg": "1441px",
+        laptop: "1025px",
+        tablet: "769px",
+        "mobile-lg": "426px",
+        "mobile-md": "376px",
+        "mobile-sm": "321px",
+        xs: "500px",
+      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
