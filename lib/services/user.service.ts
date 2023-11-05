@@ -3,6 +3,8 @@ import { UnAuthedRequest } from "./config";
 import { uniqueFields } from "@/lib/constants/constants";
 import { IUser } from "@/types/interfaces";
 
+// TODO: Manage Form data requests and Autheticated requests.
+
 let message = "مشکلی نامشخص رخ داده است.";
 
 export type SignUpMessage =
@@ -69,7 +71,7 @@ async function userSignIn(email: string, password: string): Promise<SignInRes> {
 
 async function verifyEmail(token: string, code: string): Promise<boolean> {
   try {
-    const { data } = await UnAuthedRequest.post(
+    await UnAuthedRequest.post(
       "auth/verify-email/",
       {
         code: code,
@@ -103,6 +105,28 @@ async function sendEmailVerification(token: string) {
   } catch (e) {}
 }
 
+async function editProfile(token: string, fromData: FormData): Promise<IUser> {
+  try {
+    const { data } = await UnAuthedRequest.put<IUser>(
+      "auth/edit-profile/",
+      fromData,
+      {
+        headers: {
+          "Content-Type": "",
+          Authorization: `token ${token}`,
+        },
+      },
+    );
+
+    return data;
+  } catch (e) {
+    console.log(e);
+    return {
+      bio: "",
+    };
+  }
+}
+
 async function getUserByUsername(username: string): Promise<IUser> {
   try {
     const { data } = await UnAuthedRequest.get<IUser>(
@@ -129,4 +153,5 @@ export {
   verifyEmail,
   sendEmailVerification,
   getUserByUsername,
+  editProfile,
 };
